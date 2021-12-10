@@ -12,6 +12,9 @@ namespace SocialMedia
     {
         public MappingProfile()
         {
+            CreateMap<RegisterDto, User>();
+            CreateMap<User, RegisterDto>();
+
             CreateMap<UserDto, User>();
             CreateMap<User, UserDto>();
         }

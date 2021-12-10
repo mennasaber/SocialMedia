@@ -10,7 +10,7 @@ namespace SocialMedia.IRepos
     public interface IUsersRepo
     {
         Task<AuthResponseDto> LoginAsync(LoginDto loginDto);
-        Task<AuthResponseDto> RegisterAsync(UserDto userDto);
+        Task<AuthResponseDto> RegisterAsync(RegisterDto registerDto);
         Task<Response> UpdateAsync(string id,UserDto userDto);
 
     }

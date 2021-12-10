@@ -21,8 +21,8 @@ namespace SocialMedia.Controllers
         }
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register(UserDto userDto) {
-            var response = await _usersRepo.RegisterAsync(userDto);
+        public async Task<IActionResult> Register(RegisterDto registerDto) {
+            var response = await _usersRepo.RegisterAsync(registerDto);
             return StatusCode(response.Status,response);
         }
         [HttpPost]

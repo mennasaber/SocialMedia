@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace SocialMedia.Data.Dtos
 {
-    public class UserDto:BaseUserDto
+    public class RegisterDto : BaseUserDto
     {
-        public string Id { get; set; }
+        [Required]
+        public string Password { get; set; }
     }
 }

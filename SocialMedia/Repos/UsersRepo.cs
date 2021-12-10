@@ -31,7 +31,7 @@ namespace SocialMedia.Repos
         public async Task<Response> UpdateAsync(string id, UserDto userDto)
         {
             User user = await _userManager.FindByIdAsync(id);
-            if(!userDto.Email.Equals(user.Email))
+            if (!userDto.Email.Equals(user.Email))
                 return new Response { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors = new List<string> { "Can't change user email" } };
             if (user != null)
             {
@@ -57,19 +57,19 @@ namespace SocialMedia.Repos
             }
             return new AuthResponseDto { Status = AppConstants.NotFoundStatus, Succeeded = false, Errors = new List<string> { AppConstants.InvalidUser } };
         }
-        public async Task<AuthResponseDto> RegisterAsync(UserDto userDto)
+        public async Task<AuthResponseDto> RegisterAsync(RegisterDto registerDto)
         {
-            var user = await _userManager.FindByEmailAsync(userDto.Email);
+            var user = await _userManager.FindByEmailAsync(registerDto.Email);
             if (user != null)
             {
                 return new AuthResponseDto { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors = new List<string> { AppConstants.UserExist } };
             }
-            user = _mapper.Map(userDto, user);
+            user = _mapper.Map(registerDto, user);
             user.DateRegistered = DateTime.Now;
-            var result = await _userManager.CreateAsync(user, userDto.Password);
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (result.Succeeded)
             {
-                userDto.Id = user.Id;
+                var userDto = _mapper.Map<UserDto>(user);
                 return new AuthResponseDto { Status = AppConstants.CreatedStatus, Succeeded = true, Token = GenerateJwtToken(user), User = userDto };
             }
             return new AuthResponseDto { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors = result.Errors.Select(e => e.Description).ToList() };
