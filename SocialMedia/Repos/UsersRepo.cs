@@ -27,33 +27,52 @@ namespace SocialMedia.Repos
             _configuration = configuration;
             _mapper = mapper;
         }
-        public async Task<ResponseDto> Login(LoginDto loginDto)
+        //Password not change 
+        public async Task<Response> UpdateAsync(string id, UserDto userDto)
+        {
+            User user = await _userManager.FindByIdAsync(id);
+            if(!userDto.Email.Equals(user.Email))
+                return new Response { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors = new List<string> { "Can't change user email" } };
+            if (user != null)
+            {
+                _mapper.Map(userDto, user);
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                    return new Response { Status = AppConstants.SuccessfulStatus, Succeeded = true };
+                return new Response { Status = AppConstants.NotFoundStatus, Succeeded = false, Errors = result.Errors.Select(e => e.Description).ToList() };
+            }
+            return new Response { Status = AppConstants.NotFoundStatus, Succeeded = false, Errors = new List<string> { "This's user doesn't exist" } };
+        }
+        public async Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user != null)
             {
                 var isCorrectPassword = await _userManager.CheckPasswordAsync(user, loginDto.Password);
                 if (isCorrectPassword)
-                    return new ResponseDto { Status = AppConstants.SuccessfulStatus, Succeeded = true, Token = GenerateJwtToken(user) };
+                {
+                    var userDto = _mapper.Map<UserDto>(user);
+                    return new AuthResponseDto { Status = AppConstants.SuccessfulStatus, Succeeded = true, Token = GenerateJwtToken(user), User = userDto };
+                }
             }
-            return new ResponseDto { Status = AppConstants.NotFoundStatus, Succeeded = false, Errors = new List<string> { AppConstants.InvalidUser } };
+            return new AuthResponseDto { Status = AppConstants.NotFoundStatus, Succeeded = false, Errors = new List<string> { AppConstants.InvalidUser } };
         }
-        public async Task<ResponseDto> Register(RegisterDto registerDto)
+        public async Task<AuthResponseDto> RegisterAsync(UserDto userDto)
         {
-            var user = await _userManager.FindByEmailAsync(registerDto.Email);
+            var user = await _userManager.FindByEmailAsync(userDto.Email);
             if (user != null)
             {
-                return new ResponseDto { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors = new List<string> {AppConstants.UserExist } };
+                return new AuthResponseDto { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors = new List<string> { AppConstants.UserExist } };
             }
-            user = _mapper.Map<User>(registerDto);
+            user = _mapper.Map(userDto, user);
             user.DateRegistered = DateTime.Now;
-            var result =await _userManager.CreateAsync(user,registerDto.Password);
+            var result = await _userManager.CreateAsync(user, userDto.Password);
             if (result.Succeeded)
             {
-                return new ResponseDto { Status = AppConstants.CreatedStatus, Succeeded = true, Token = GenerateJwtToken(user) };
+                userDto.Id = user.Id;
+                return new AuthResponseDto { Status = AppConstants.CreatedStatus, Succeeded = true, Token = GenerateJwtToken(user), User = userDto };
             }
-
-            return new ResponseDto { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors = result.Errors.Select(e => e.Description).ToList() };
+            return new AuthResponseDto { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors = result.Errors.Select(e => e.Description).ToList() };
         }
         string GenerateJwtToken(User user)
         {

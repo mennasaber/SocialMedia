@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace SocialMedia.Data.Dtos
 {
-    public class RegisterDto
+    public class UserDto
     {
+        public string Id { get; set; }
         [Required]
         public string Username { get; set; }
         [Required]
@@ -18,6 +19,6 @@ namespace SocialMedia.Data.Dtos
         [Required]
         public string Password { get; set; }
         [Required]
-        public DateTime Birthdate { get; set; }
+        public DateTime Birthday { get; set; }
     }
 }

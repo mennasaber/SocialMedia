@@ -21,17 +21,22 @@ namespace SocialMedia.Controllers
         }
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register(RegisterDto registerDto) {
-            var response = await _usersRepo.Register(registerDto);
+        public async Task<IActionResult> Register(UserDto userDto) {
+            var response = await _usersRepo.RegisterAsync(userDto);
             return StatusCode(response.Status,response);
         }
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
-            var response = await _usersRepo.Login(loginDto);
+            var response = await _usersRepo.LoginAsync(loginDto);
             return StatusCode(response.Status, response);
         }
-
+        [HttpPut]
+        public async Task<IActionResult> Update(string id,UserDto userDto)
+        {
+            var response = await _usersRepo.UpdateAsync(id,userDto);
+            return StatusCode(response.Status, response);
+        }
     }
 }
