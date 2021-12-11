@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SocialMedia.Data.Dtos
 {
-    public class Response
+    public class ResponseDto
     {
         public int Status { get; set; }
         public bool Succeeded { get; set; }

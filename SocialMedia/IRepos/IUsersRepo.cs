@@ -11,7 +11,8 @@ namespace SocialMedia.IRepos
     {
         Task<AuthResponseDto> LoginAsync(LoginDto loginDto);
         Task<AuthResponseDto> RegisterAsync(RegisterDto registerDto);
-        Task<Response> UpdateAsync(string id,UserDto userDto);
+        Task<ResponseDto> UpdateAsync(string id,UserDto userDto);
+        ListResponseDto<UserDto> GetUsersByUsername(string searchKey);
 
     }
 }

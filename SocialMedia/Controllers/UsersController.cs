@@ -21,22 +21,46 @@ namespace SocialMedia.Controllers
         }
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register(RegisterDto registerDto) {
-            var response = await _usersRepo.RegisterAsync(registerDto);
-            return StatusCode(response.Status,response);
+        public async Task<IActionResult> Register(RegisterDto registerDto)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _usersRepo.RegisterAsync(registerDto);
+                return StatusCode(response.Status, response);
+            }
+            return BadRequest();
         }
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
-            var response = await _usersRepo.LoginAsync(loginDto);
-            return StatusCode(response.Status, response);
+            if (ModelState.IsValid)
+            {
+                var response = await _usersRepo.LoginAsync(loginDto);
+                return StatusCode(response.Status, response);
+            }
+            return BadRequest();
         }
         [HttpPut]
-        public async Task<IActionResult> Update(string id,UserDto userDto)
+        public async Task<IActionResult> Update(string id, UserDto userDto)
         {
-            var response = await _usersRepo.UpdateAsync(id,userDto);
-            return StatusCode(response.Status, response);
+            if (ModelState.IsValid)
+            {
+                var response = await _usersRepo.UpdateAsync(id, userDto);
+                return StatusCode(response.Status, response);
+            }
+            return BadRequest();
+        }
+        [HttpGet]
+        [Route("Search")]
+        public IActionResult SearchByUsername(string searchKey)
+        {
+            if (ModelState.IsValid)
+            {
+                var respone = _usersRepo.GetUsersByUsername(searchKey);
+                return StatusCode(respone.Status, respone);
+            }
+            return BadRequest();
         }
     }
 }

@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace SocialMedia.Data.Dtos
 {
-    public class AuthResponseDto:ResponseDto
+    public class ListResponseDto<TEntity>:ResponseDto where TEntity : class
     {
-        public string Token { get; set; }
-        public UserDto User { get; set; }
+        public ICollection<TEntity> Entities { get; set; }
     }
 }
