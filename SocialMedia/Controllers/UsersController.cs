@@ -44,7 +44,7 @@ namespace SocialMedia.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(string id, UserDto userDto)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && id != null && !id.Trim().Equals(""))
             {
                 var response = await _usersRepo.UpdateAsync(id, userDto);
                 return StatusCode(response.Status, response);
@@ -55,10 +55,20 @@ namespace SocialMedia.Controllers
         [Route("Search")]
         public IActionResult SearchByUsername(string searchKey)
         {
-            if (ModelState.IsValid)
+            if (searchKey != null && !searchKey.Trim().Equals(""))
             {
                 var respone = _usersRepo.GetUsersByUsername(searchKey);
                 return StatusCode(respone.Status, respone);
+            }
+            return BadRequest();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetUser(string id)
+        {
+            if (id != null && !id.Trim().Equals(""))
+            {
+                var reponse = await _usersRepo.GetUserByIdAsync(id);
+                return StatusCode(reponse.Status, reponse);
             }
             return BadRequest();
         }

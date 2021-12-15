@@ -79,10 +79,10 @@ namespace SocialMedia.Repos
         {
             if (!searchKey.Trim().Equals(""))
             {
-                var users = _userManager.Users.Where(u => u.UserName.Contains(searchKey)).Select(u=>_mapper.Map<UserDto>(u)).ToList();
+                var users = _userManager.Users.Where(u => u.UserName.Contains(searchKey)).Select(u => _mapper.Map<UserDto>(u)).ToList();
                 return new ListResponse<UserDto> { Status = AppConstants.SuccessfulStatus, Succeeded = true, Entities = users };
             }
-            return new ListResponse<UserDto> { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors =new List<string> { "Search key is empty"} }; ;
+            return new ListResponse<UserDto> { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors = new List<string> { "Search key is empty" } }; ;
         }
         private string GenerateJwtToken(User user)
         {
@@ -103,6 +103,17 @@ namespace SocialMedia.Repos
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
             var jwtToken = jwtTokenHandler.WriteToken(token);
             return jwtToken;
+        }
+
+        public async Task<Respose<UserDto>> GetUserByIdAsync(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                var userDto = _mapper.Map<UserDto>(user);
+                return new Respose<UserDto> { Status = AppConstants.SuccessfulStatus, Succeeded = true, EntityDto = userDto };
+            }
+            return new Respose<UserDto> { Status = AppConstants.NotFoundStatus, Succeeded = false, Errors = new List<string> { AppConstants.NotFoundMessage } };
         }
     }
 }
