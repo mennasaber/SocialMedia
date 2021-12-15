@@ -17,6 +17,12 @@ namespace SocialMedia
 
             CreateMap<UserDto, User>();
             CreateMap<User, UserDto>();
+
+            CreateMap<PostDto, Post>();
+            CreateMap<Post, PostDto>();
+
+            CreateMap<BasePostDto, Post>();
+            CreateMap<Post, BasePostDto>();
         }
     }
 }

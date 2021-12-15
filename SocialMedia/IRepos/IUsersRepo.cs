@@ -10,6 +10,6 @@ namespace SocialMedia.IRepos
         Task<AuthResponse<UserDto>> RegisterAsync(RegisterDto registerDto);
         Task<BaseResponse> UpdateAsync(string id,UserDto userDto);
         ListResponse<UserDto> GetUsersByUsername(string searchKey);
-        Task<Respose<UserDto>> GetUserByIdAsync(string id);
+        Task<Response<UserDto>> GetUserByIdAsync(string id);
     }
 }

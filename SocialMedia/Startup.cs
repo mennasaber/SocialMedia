@@ -64,6 +64,7 @@ namespace SocialMedia
             });
             services.AddSingleton(mapper);
             services.AddScoped<IUsersRepo,UsersRepo>();
+            services.AddScoped<IPostsRepo, PostsRepo>();
             services.AddControllers();
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddSwaggerGen(c =>

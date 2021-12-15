@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SocialMedia.Data.ResponeViewModels
 {
-    public class Respose<TEntityDto> : BaseResponse where TEntityDto : class
+    public class Response<TEntityDto> : BaseResponse where TEntityDto : class
     {
         public TEntityDto EntityDto { get; set; }
     }

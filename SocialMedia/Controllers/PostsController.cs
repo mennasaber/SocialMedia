@@ -1,0 +1,64 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using SocialMedia.Data.Dtos;
+using SocialMedia.IRepos;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace SocialMedia.Controllers
+{
+    [Route("api/Posts")]
+    [ApiController]
+    public class PostsController : ControllerBase
+    {
+        private readonly IPostsRepo _postsRepo;
+
+        public PostsController(IPostsRepo postsRepo)
+        {
+            _postsRepo = postsRepo;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPost(int id)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _postsRepo.GetPostByIdAsync(id);
+                return StatusCode(response.Status, response);
+            }
+            return BadRequest();
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddPost(BasePostDto basePostDto)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _postsRepo.AddPostAsync(basePostDto);
+                return StatusCode(response.Status, response);
+            }
+            return BadRequest();
+        }
+        [HttpDelete]
+        public async Task<IActionResult> DeletePostAsync(int id)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _postsRepo.DeletePostAsync(id);
+                return StatusCode(response.Status, response);
+            }
+            return BadRequest();
+        }
+        [HttpPut]
+        public async Task<IActionResult> UpdatePostAsync(int id, string text)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _postsRepo.UpdateAsync(id, text);
+                return StatusCode(response.Status, response);
+            }
+            return BadRequest();
+        }
+    }
+}

@@ -14,10 +14,12 @@ namespace SocialMedia.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUsersRepo _usersRepo;
+        private readonly IPostsRepo _postRepo;
 
-        public UsersController(IUsersRepo usersRepo)
+        public UsersController(IUsersRepo usersRepo, IPostsRepo postRepo)
         {
             _usersRepo = usersRepo;
+            _postRepo = postRepo;
         }
         [HttpPost]
         [Route("Register")]
@@ -65,10 +67,21 @@ namespace SocialMedia.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUser(string id)
         {
-            if (id != null && !id.Trim().Equals(""))
+            if (ModelState.IsValid)
             {
                 var reponse = await _usersRepo.GetUserByIdAsync(id);
                 return StatusCode(reponse.Status, reponse);
+            }
+            return BadRequest();
+        }
+        [HttpGet]
+        [Route("posts")]
+        public IActionResult GetUserPosts(string id)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = _postRepo.GetPostsForUser(id);
+                return StatusCode(response.Status, response);
             }
             return BadRequest();
         }

@@ -105,15 +105,15 @@ namespace SocialMedia.Repos
             return jwtToken;
         }
 
-        public async Task<Respose<UserDto>> GetUserByIdAsync(string id)
+        public async Task<Response<UserDto>> GetUserByIdAsync(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user != null)
             {
                 var userDto = _mapper.Map<UserDto>(user);
-                return new Respose<UserDto> { Status = AppConstants.SuccessfulStatus, Succeeded = true, EntityDto = userDto };
+                return new Response<UserDto> { Status = AppConstants.SuccessfulStatus, Succeeded = true, EntityDto = userDto };
             }
-            return new Respose<UserDto> { Status = AppConstants.NotFoundStatus, Succeeded = false, Errors = new List<string> { AppConstants.NotFoundMessage } };
+            return new Response<UserDto> { Status = AppConstants.NotFoundStatus, Succeeded = false, Errors = new List<string> { AppConstants.NotFoundMessage } };
         }
     }
 }
