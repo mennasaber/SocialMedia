@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SocialMedia.Data.Dtos;
 using SocialMedia.Data.Models;
+using SocialMedia.Data.ResponeViewModels;
 using SocialMedia.IRepos;
 using System;
 using System.Collections.Generic;
@@ -27,12 +28,12 @@ namespace SocialMedia.Repos
             _configuration = configuration;
             _mapper = mapper;
         }
-        public async Task<AuthResponseDto> RegisterAsync(RegisterDto registerDto)
+        public async Task<AuthResponse<UserDto>> RegisterAsync(RegisterDto registerDto)
         {
             var user = await _userManager.FindByEmailAsync(registerDto.Email);
             if (user != null)
             {
-                return new AuthResponseDto { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors = new List<string> { AppConstants.UserExist } };
+                return new AuthResponse<UserDto> { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors = new List<string> { AppConstants.UserExist } };
             }
             user = _mapper.Map(registerDto, user);
             user.DateRegistered = DateTime.Now;
@@ -40,27 +41,27 @@ namespace SocialMedia.Repos
             if (result.Succeeded)
             {
                 var userDto = _mapper.Map<UserDto>(user);
-                return new AuthResponseDto { Status = AppConstants.CreatedStatus, Succeeded = true, Token = GenerateJwtToken(user), User = userDto };
+                return new AuthResponse<UserDto> { Status = AppConstants.CreatedStatus, Succeeded = true, Token = GenerateJwtToken(user), User = userDto };
             }
-            return new AuthResponseDto { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors = result.Errors.Select(e => e.Description).ToList() };
+            return new AuthResponse<UserDto> { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors = result.Errors.Select(e => e.Description).ToList() };
         }
         //Password not change    
-        public async Task<ResponseDto> UpdateAsync(string id, UserDto userDto)
+        public async Task<BaseResponse> UpdateAsync(string id, UserDto userDto)
         {
             User user = await _userManager.FindByIdAsync(id);
             if (!userDto.Email.Equals(user.Email))
-                return new ResponseDto { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors = new List<string> { "Can't change user email" } };
+                return new BaseResponse { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors = new List<string> { "Can't change user email" } };
             if (user != null)
             {
                 _mapper.Map(userDto, user);
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded)
-                    return new ResponseDto { Status = AppConstants.SuccessfulStatus, Succeeded = true };
-                return new ResponseDto { Status = AppConstants.NotFoundStatus, Succeeded = false, Errors = result.Errors.Select(e => e.Description).ToList() };
+                    return new BaseResponse { Status = AppConstants.SuccessfulStatus, Succeeded = true };
+                return new BaseResponse { Status = AppConstants.NotFoundStatus, Succeeded = false, Errors = result.Errors.Select(e => e.Description).ToList() };
             }
-            return new ResponseDto { Status = AppConstants.NotFoundStatus, Succeeded = false, Errors = new List<string> { "This's user doesn't exist" } };
+            return new BaseResponse { Status = AppConstants.NotFoundStatus, Succeeded = false, Errors = new List<string> { "This's user doesn't exist" } };
         }
-        public async Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
+        public async Task<AuthResponse<UserDto>> LoginAsync(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user != null)
@@ -69,19 +70,19 @@ namespace SocialMedia.Repos
                 if (isCorrectPassword)
                 {
                     var userDto = _mapper.Map<UserDto>(user);
-                    return new AuthResponseDto { Status = AppConstants.SuccessfulStatus, Succeeded = true, Token = GenerateJwtToken(user), User = userDto };
+                    return new AuthResponse<UserDto> { Status = AppConstants.SuccessfulStatus, Succeeded = true, Token = GenerateJwtToken(user), User = userDto };
                 }
             }
-            return new AuthResponseDto { Status = AppConstants.NotFoundStatus, Succeeded = false, Errors = new List<string> { AppConstants.InvalidUser } };
+            return new AuthResponse<UserDto> { Status = AppConstants.NotFoundStatus, Succeeded = false, Errors = new List<string> { AppConstants.InvalidUser } };
         }
-        public ListResponseDto<UserDto> GetUsersByUsername(string searchKey)
+        public ListResponse<UserDto> GetUsersByUsername(string searchKey)
         {
             if (!searchKey.Trim().Equals(""))
             {
                 var users = _userManager.Users.Where(u => u.UserName.Contains(searchKey)).Select(u=>_mapper.Map<UserDto>(u)).ToList();
-                return new ListResponseDto<UserDto> { Status = AppConstants.SuccessfulStatus, Succeeded = true, Entities = users };
+                return new ListResponse<UserDto> { Status = AppConstants.SuccessfulStatus, Succeeded = true, Entities = users };
             }
-            return new ListResponseDto<UserDto> { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors =new List<string> { "Search key is empty"} }; ;
+            return new ListResponse<UserDto> { Status = AppConstants.BadRequestStatus, Succeeded = false, Errors =new List<string> { "Search key is empty"} }; ;
         }
         private string GenerateJwtToken(User user)
         {
