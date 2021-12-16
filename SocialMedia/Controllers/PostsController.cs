@@ -14,10 +14,12 @@ namespace SocialMedia.Controllers
     public class PostsController : ControllerBase
     {
         private readonly IPostsRepo _postsRepo;
+        private readonly IReactsRepo _reactsRepo;
 
-        public PostsController(IPostsRepo postsRepo)
+        public PostsController(IPostsRepo postsRepo, IReactsRepo reactsRepo)
         {
             _postsRepo = postsRepo;
+            _reactsRepo = reactsRepo;
         }
 
         [HttpGet]
@@ -56,6 +58,18 @@ namespace SocialMedia.Controllers
             if (ModelState.IsValid)
             {
                 var response = await _postsRepo.UpdateAsync(id, text);
+                return StatusCode(response.Status, response);
+            }
+            return BadRequest();
+        }
+        
+        [HttpGet]
+        [Route("reacts")]
+        public async Task<IActionResult> GetReacts(int postId)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _reactsRepo.GetReactsByPostIdAsync(postId);
                 return StatusCode(response.Status, response);
             }
             return BadRequest();

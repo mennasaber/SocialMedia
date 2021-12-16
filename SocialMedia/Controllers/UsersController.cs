@@ -15,11 +15,13 @@ namespace SocialMedia.Controllers
     {
         private readonly IUsersRepo _usersRepo;
         private readonly IPostsRepo _postRepo;
+        private readonly IReactsRepo _reactsRepo;
 
-        public UsersController(IUsersRepo usersRepo, IPostsRepo postRepo)
+        public UsersController(IUsersRepo usersRepo, IPostsRepo postRepo, IReactsRepo reactsRepo)
         {
             _usersRepo = usersRepo;
             _postRepo = postRepo;
+            _reactsRepo = reactsRepo;
         }
         [HttpPost]
         [Route("Register")]
@@ -81,6 +83,39 @@ namespace SocialMedia.Controllers
             if (ModelState.IsValid)
             {
                 var response = _postRepo.GetPostsForUser(id);
+                return StatusCode(response.Status, response);
+            }
+            return BadRequest();
+        }
+        [HttpGet]
+        [Route("reacts")]
+        public async Task<IActionResult> GetReacts(string userId)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _reactsRepo.GetReactsByUserIdAsync(userId);
+                return StatusCode(response.Status, response);
+            }
+            return BadRequest();
+        }
+        [HttpPost]
+        [Route("reacts")]
+        public async Task<IActionResult> AddReact(BaseReactDto baseReactDto)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _reactsRepo.AddReactAsync(baseReactDto);
+                return StatusCode(response.Status, response);
+            }
+            return BadRequest();
+        }
+        [HttpDelete]
+        [Route("reacts")]
+        public async Task<IActionResult> DeleteReact(int reactId)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _reactsRepo.DeleteReactAsync(reactId);
                 return StatusCode(response.Status, response);
             }
             return BadRequest();

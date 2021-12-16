@@ -23,6 +23,12 @@ namespace SocialMedia
 
             CreateMap<BasePostDto, Post>();
             CreateMap<Post, BasePostDto>();
+
+            CreateMap<ReactDto, React>();
+            CreateMap<React, ReactDto>();
+
+            CreateMap<BaseReactDto, React>();
+            CreateMap<React, BaseReactDto>();
         }
     }
 }
